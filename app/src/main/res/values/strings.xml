@@ -1,3 +1,35 @@
 <resources>
     <string name="app_name">WeatherApp</string>
+
+    <!-- Content Description-->
+    <string name="lbl_cd_back">Back</string>
+    <string name="lbl_cd_search">Search</string>
+    <string name="lbl_cd_location">Location</string>
+    <string name="lbl_cd_temperature">Temperature</string>
+
+
+    <!-- Home Activity-->
+    <string name="lbl_title_details_screen">Weather Details</string>
+    <string name="lbl_now">Now</string>
+    <string name="lbl_current_temp_format">High: %s°, Low: %s°</string>
+    <string name="lbl_weekly_forecast">Weekly Forecast (%s)</string>
+    <string name="lbl_today">Today</string>
+    <string name="msg_validation_error_coordinates">Please enter valid Coordinate (ex. latitude, longitude) </string>
+
+    <!-- Api Errors-->
+    <string name="msg_api_error_no_data_available">No data available</string>
+    <string name="msg_api_error_network_error">Network error, please try again</string>
+    <string name="msg_api_error_server_error">Server error, please try again</string>
+    <string name="lbl_retry">Retry</string>
+
+    <string name="msg_the_request_timed_out">The request has timed out</string>
+    <string name="msg_youve_hit_your_rate_limit">Rate limit exceeded</string>
+    <string name="msg_no_internet">Unable to connect to the server. Please check your internet connection.</string>
+    <string name="msg_file_too_large">The file you attempted to upload is too large.</string>
+    <string name="msg_server_error">An error occurred. Please try again.</string>
+    <string name="msg_unknown_error">An unknown error has occurred</string>
+    <string name="msg_error_disk_full">Unable to save the item because your device\'s disk is full</string>
+    <string name="msg_error_serialization">Error: Could not parse data.</string>
+
+
 </resources>
