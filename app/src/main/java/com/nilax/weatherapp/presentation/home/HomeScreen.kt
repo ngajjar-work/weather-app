@@ -8,13 +8,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -45,6 +45,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -76,26 +77,28 @@ fun HomeScreenBody(
     onTextChanged: (String) -> Unit,
     onRetry: () -> Unit
 ) {
-    when {
-        state.isLoading -> LoadingView()
-        state.weatherInfo != null -> {
-            WeatherInfo(
-                weatherInfo = state.weatherInfo,
-                searchedText = state.searchedText,
-                isValidSearch = state.isValidSearch,
-                onTextChanged = onTextChanged,
-                onSearchClicked = onSearchClicked
-            )
-        }
 
-        state.error != null -> {
-            val context = LocalContext.current
-            if (state.canRetryOnError) {
-                ErrorView(errorMessage = state.error.asString(), onRetry = onRetry)
-            } else {
-                Toast.makeText(context, state.error.asString(), Toast.LENGTH_LONG).show()
-            }
+    if (state.weatherInfo != null) {
+        WeatherInfo(
+            weatherInfo = state.weatherInfo,
+            searchedText = state.searchedText,
+            isValidSearch = state.isValidSearch,
+            onTextChanged = onTextChanged,
+            onSearchClicked = onSearchClicked
+        )
+    }
+
+    if (state.error != null) {
+        val context = LocalContext.current
+        if (state.needRetryScreen) {
+            ErrorView(errorMessage = state.error.asString(), onRetry = onRetry)
+        } else {
+            Toast.makeText(context, state.error.asString(), Toast.LENGTH_LONG).show()
         }
+    }
+
+    if (state.isLoading) {
+        LoadingView()
     }
 }
 
@@ -318,7 +321,8 @@ fun WeeklyTemperature(weather: WeeklyForecast) {
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
             Text(
-                modifier = Modifier.wrapContentWidth(),
+                modifier = Modifier.defaultMinSize(minWidth = 60.dp),
+                textAlign = TextAlign.End,
                 style = MaterialTheme.typography.bodySmall,
                 text = "${weather.high}°/${weather.low}°"
             )

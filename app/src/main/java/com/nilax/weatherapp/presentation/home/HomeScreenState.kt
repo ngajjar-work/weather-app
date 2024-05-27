@@ -8,6 +8,6 @@ data class HomeScreenState(
     val isValidSearch: Boolean = false,
     val searchedText: String = "",
     val weatherInfo: WeeklyForecastData? = null,
-    val canRetryOnError: Boolean = false,
+    val needRetryScreen: Boolean = true,
     val error: UiText? = null
 )

@@ -7,5 +7,5 @@ data class APIError(
     val error: Boolean = false,
 
     @field:SerializedName("reason")
-    val reason: String? = "",
+    val reason: String?,
 )
