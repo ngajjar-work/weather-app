@@ -45,9 +45,7 @@ class HomeViewModel @Inject constructor(
                 _homeScreenState.value = when (result) {
                     is Result.Error -> {
                         _homeScreenState.value.copy(
-                            canRetryOnError = _homeScreenState.value.weatherInfo != null,
                             isLoading = false,
-                            weatherInfo = null,
                             error = (result.error as DataError).asUiText(),
                         )
                     }
@@ -58,7 +56,7 @@ class HomeViewModel @Inject constructor(
                             isLoading = false,
                             weatherInfo = result.data,
                             error = null,
-                            canRetryOnError = true,
+                            needRetryScreen = false,
                             searchedText = "$latitude, $longitude"
                         )
                     }

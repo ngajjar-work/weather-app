@@ -10,4 +10,5 @@ sealed interface DataError : Error {
         SERIALIZATION,
         UNKNOWN
     }
+    data class CustomError(val message: String) : DataError
 }

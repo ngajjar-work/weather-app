@@ -80,7 +80,7 @@ class HomeViewModelTest : BaseTest() {
         Assert.assertEquals(expectedWeeklyForecastData, sut.homeScreenState.value.weatherInfo)
         Assert.assertFalse(sut.homeScreenState.value.isLoading)
         Assert.assertNull(sut.homeScreenState.value.error)
-        Assert.assertTrue(sut.homeScreenState.value.canRetryOnError)
+        Assert.assertFalse(sut.homeScreenState.value.needRetryScreen)
     }
 
     @Test

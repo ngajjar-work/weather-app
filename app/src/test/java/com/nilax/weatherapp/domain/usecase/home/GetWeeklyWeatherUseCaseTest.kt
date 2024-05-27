@@ -1,11 +1,8 @@
 package com.nilax.weatherapp.domain.usecase.home
 
-import com.google.gson.Gson
 import com.nhaarman.mockitokotlin2.whenever
 import com.nilax.weatherapp.common.NetworkConstants
 import com.nilax.weatherapp.common.network.Result
-import com.nilax.weatherapp.common.network.mapError
-import com.nilax.weatherapp.data.remote.dto.APIError
 import com.nilax.weatherapp.data.remote.dto.WeeklyWeatherResponse
 import com.nilax.weatherapp.domain.mapper.WeeklyForecastResponseToModel
 import com.nilax.weatherapp.domain.model.WeeklyForecast
@@ -83,7 +80,7 @@ class GetWeeklyWeatherUseCaseTest {
             dailyParameter
         )
 
-        // Then
+        // Assert
         resultFlow.collect { result ->
             assertTrue(result is Result.Success)
             assertEquals(expectedSuccessData, (result as Result.Success).data)
@@ -127,16 +124,20 @@ class GetWeeklyWeatherUseCaseTest {
             dailyParameter
         ).first()
 
-        // Then
+        // Assert
         assertTrue(result is Result.Success)
         assertEquals(dummyForecasts, (result as Result.Success).data.weeklyForecast)
     }
 
     @Test
     fun `should return error for invalid parameters`() = runTest {
-        // Given
-        val apiError = APIError(reason = "Invalid parameters", error = true)
-        val mockErrorResponse = createMockErrorResponse(400, apiError)
+
+        val errorJson = "{\"error\": true,\"reason\": \"Latitude must be in range of -90 to 90\"}"
+
+        val mockErrorResponse: Response<WeeklyWeatherResponse> = Response.error(
+            400,
+            errorJson.toResponseBody("application/json".toMediaTypeOrNull())
+        )
 
         whenever(
             repository.getWeeklyForecast(
@@ -145,8 +146,7 @@ class GetWeeklyWeatherUseCaseTest {
                 currentParameter,
                 dailyParameter
             )
-        )
-            .thenReturn(mockErrorResponse)
+        ).thenReturn(mockErrorResponse)
 
         // When
         val resultFlow: Flow<Result<WeeklyForecastData, RootError>> = sut(
@@ -156,12 +156,17 @@ class GetWeeklyWeatherUseCaseTest {
             dailyParameter
         )
 
-        // Then
+        // Assert
         resultFlow.collect { result ->
             assertTrue(result is Result.Error)
-            assertEquals(mockErrorResponse.mapError(), (result as Result.Error).error)
+            assertTrue((result as Result.Error).error is DataError.CustomError)
+            assertEquals(
+                "Latitude must be in range of -90 to 90",
+                (result.error as DataError.CustomError).message
+            )
         }
     }
+
 
     @Test
     fun `should return UNKNOWN error for success response with null body`() = runTest {
@@ -174,8 +179,7 @@ class GetWeeklyWeatherUseCaseTest {
                 currentParameter,
                 dailyParameter
             )
-        )
-            .thenReturn(Response.success(null))
+        ).thenReturn(Response.success(null))
 
         //Act
         val resultFlow: Flow<Result<WeeklyForecastData, RootError>> = sut(
@@ -185,7 +189,7 @@ class GetWeeklyWeatherUseCaseTest {
             dailyParameter
         )
 
-        // Then
+        // Assert
         resultFlow.collect { result ->
             assertTrue(result is Result.Error)
             assertEquals(DataError.Network.UNKNOWN, (result as Result.Error).error)
@@ -217,7 +221,7 @@ class GetWeeklyWeatherUseCaseTest {
             dailyParameter
         )
 
-        // Then
+        // Assert
         resultFlow.collect { result ->
             assertTrue(result is Result.Error)
             assertEquals(DataError.Network.REQUEST_TIMEOUT, (result as Result.Error).error)
@@ -253,21 +257,5 @@ class GetWeeklyWeatherUseCaseTest {
             assertTrue(result is Result.Error)
             assertEquals(expectedError, (result as Result.Error).error)
         }
-    }
-
-    private fun createMockErrorResponse(code: Int, body: Any): Response<WeeklyWeatherResponse> {
-        val errorJson = Gson().toJson(body)
-        return Response.error(
-            code,
-            errorJson.toResponseBody("application/json".toMediaTypeOrNull())
-        )
-    }
-
-    private fun createMockErrorResponse(code: Int): Response<WeeklyWeatherResponse> {
-        val errorJson = Gson().toJson(null)
-        return Response.error(
-            code,
-            errorJson.toResponseBody("application/json".toMediaTypeOrNull())
-        )
     }
 }

@@ -1,15 +1,21 @@
 package com.nilax.weatherapp.common.network
 
 import com.google.gson.Gson
+import com.nhaarman.mockitokotlin2.whenever
 import com.nilax.weatherapp.data.remote.dto.WeeklyWeatherResponse
 import com.nilax.weatherapp.domain.model.error.DataError
+import kotlinx.coroutines.test.runTest
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.ResponseBody
 import okhttp3.ResponseBody.Companion.toResponseBody
+import org.junit.Assert
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
+import org.mockito.Mockito
 import retrofit2.HttpException
 import retrofit2.Response
+import java.io.StringReader
 
 class NetworkErrorMapperTest {
 
@@ -86,6 +92,55 @@ class NetworkErrorMapperTest {
     private fun createMockErrorHttpException(code: Int): HttpException {
         val errorResponse = Response.error<Any>(code, ResponseBody.create(null, ""))
         return HttpException(errorResponse)
+    }
+
+    @Test
+    fun `should return custom error for valid error body`() = runTest {
+
+        // Arrange
+        val errorJson = "{\"error\": true,\"reason\": \"Latitude must be in range of -90 to 90\"}"
+
+        val mockErrorResponse: Response<WeeklyWeatherResponse> = Response.error(
+            400,
+            errorJson.toResponseBody("application/json".toMediaTypeOrNull())
+        )
+
+        // Act
+        val error = mockErrorResponse.mapError()
+
+        // Assert
+        assertTrue(error is DataError.CustomError)
+        assertEquals(
+            "Latitude must be in range of -90 to 90",
+            (error as DataError.CustomError).message
+        )
+    }
+
+
+    @Test
+    fun `should return UNKNOWN error for unexpected error body`() = runTest {
+
+        val errorJson = "{\"message\": \"Unexpected Error Occurred\"}"
+
+        val mockErrorResponse: Response<WeeklyWeatherResponse> = Response.error(
+            400,
+            errorJson.toResponseBody("application/json".toMediaTypeOrNull())
+        )
+
+        assertEquals(DataError.Network.UNKNOWN, mockErrorResponse.mapError())
+    }
+
+    @Test
+    fun `getErrorObject should return null on JsonSyntaxException`() {
+
+        val brokenJson = "This is not valid JSON"
+        val mockResponseBody: ResponseBody = Mockito.mock(ResponseBody::class.java)
+
+        // Mock response body to return broken JSON as string
+        whenever(mockResponseBody.charStream()).thenReturn(StringReader(brokenJson))
+
+        // Assert null is returned when parsing fails
+        Assert.assertNull(mockResponseBody.getErrorObject<Any>())
     }
 
 }
