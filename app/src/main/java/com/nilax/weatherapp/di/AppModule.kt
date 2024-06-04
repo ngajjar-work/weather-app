@@ -1,6 +1,6 @@
 package com.nilax.weatherapp.di
 
-import com.nilax.weatherapp.common.Constants
+import com.nilax.weatherapp.common.NetworkConstants
 import com.nilax.weatherapp.data.remote.WeatherApi
 import com.nilax.weatherapp.data.repo.WeatherRepositoryImpl
 import com.nilax.weatherapp.domain.repo.WeatherRepository
@@ -36,7 +36,7 @@ object AppModule {
 
         return Retrofit.Builder()
             .client(httpClient)
-            .baseUrl(Constants.BASE_URL)
+            .baseUrl(NetworkConstants.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build().create(WeatherApi::class.java)
 

@@ -21,6 +21,7 @@ retrofit = "2.11.0"
 serialization = "1.6.3"
 hiltVersion = "2.51.1"
 uiTooling = "1.6.7"
+coil = "2.6.0"
 
 
 [libraries]
@@ -61,6 +62,9 @@ androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-com
 
 # Other
 androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
+
+#ImageLoading
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 
 
 [plugins]

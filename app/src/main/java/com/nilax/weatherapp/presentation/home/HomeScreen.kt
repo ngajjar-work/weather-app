@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -48,13 +47,17 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
 import com.nilax.weatherapp.R
+import com.nilax.weatherapp.domain.model.WeatherCodeInfo
 import com.nilax.weatherapp.domain.model.WeeklyForecast
 import com.nilax.weatherapp.domain.model.WeeklyForecastData
 import com.nilax.weatherapp.presentation.common.ErrorView
 import com.nilax.weatherapp.presentation.common.LoadingView
+import com.nilax.weatherapp.presentation.common.UiText
 import com.nilax.weatherapp.presentation.theme.WeatherAppTheme
 
 @Composable
@@ -141,8 +144,10 @@ fun WeatherInfo(
                 Spacer(modifier = Modifier.padding(top = 32.dp))
                 CurrentTemperature(
                     weatherInfo.currentTemp,
+                    weatherInfo.currentFeelsLike,
                     weatherInfo.dailyHigh,
-                    weatherInfo.dailyLow
+                    weatherInfo.dailyLow,
+                    weatherInfo.weatherCode
                 )
                 Spacer(modifier = Modifier.padding(top = 32.dp))
             }
@@ -224,50 +229,86 @@ fun LocationSearch(
 }
 
 @Composable
-fun CurrentTemperature(currentTemp: Int, dailyHigh: Int, dailyLow: Int) {
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
+fun CurrentTemperature(
+    currentTemp: Int,
+    currentFeelsLike: Int,
+    dailyHigh: Int,
+    dailyLow: Int,
+    weatherCode: WeatherCodeInfo
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
     ) {
         val textColor = MaterialTheme.colorScheme.onSecondaryContainer
-        Text(
-            text = stringResource(R.string.lbl_now),
-            style = MaterialTheme.typography.bodyLarge,
-            color = textColor
-        )
-        Row(
-            horizontalArrangement = Arrangement.Start,
-            modifier = Modifier.wrapContentSize()
+
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
         ) {
+
             Text(
-                text = "$currentTemp°",
-                style = MaterialTheme.typography.displayLarge.copy(
-                    platformStyle = PlatformTextStyle(includeFontPadding = false)
-                ),
+                text = stringResource(R.string.lbl_now),
+                style = MaterialTheme.typography.headlineSmall,
                 color = textColor
             )
-            Icon(
-                painter = painterResource(id = R.drawable.ic_cloud),
-                modifier = Modifier
-                    .size(40.dp)
-                    .align(Alignment.Bottom),
-                tint = textColor,
-                contentDescription = stringResource(id = R.string.lbl_cd_temperature),
-            )
 
+            Row(Modifier.padding(top = 5.dp), verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = "$currentTemp°",
+                    style = MaterialTheme.typography.headlineLarge.copy(
+                        platformStyle = PlatformTextStyle(includeFontPadding = false),
+                        fontSize = 64.sp
+                    ),
+                    color = textColor
+                )
+                AsyncImage(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .clip(CircleShape),
+                    model = weatherCode.url,
+                    contentDescription = weatherCode.description,
+                )
+            }
+
+            Text(
+                modifier = Modifier.padding(top = 5.dp),
+                text = String.format(
+                    stringResource(R.string.lbl_current_temp_format),
+                    dailyHigh,
+                    dailyLow
+                ),
+                style = MaterialTheme.typography.bodyMedium,
+                color = textColor
+            )
         }
 
-        Text(
-            text = String.format(
-                stringResource(R.string.lbl_current_temp_format),
-                dailyHigh,
-                dailyLow
-            ),
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(top = 10.dp),
-            color = textColor
-        )
+        Column(
+            horizontalAlignment = Alignment.End,
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
+        ) {
 
+            Text(
+                modifier = Modifier.padding(top = 2.dp),
+                text = weatherCode.description,
+                style = MaterialTheme.typography.titleMedium,
+                color = textColor
+            )
+
+            Text(
+                modifier = Modifier.padding(top = 2.dp),
+                text = UiText.StringResource(
+                    R.string.lbl_current_feel_like_temp_format,
+                    arrayOf(currentFeelsLike)
+                ).asString(),
+                style = MaterialTheme.typography.bodySmall,
+                color = textColor
+            )
+        }
 
     }
 
@@ -315,10 +356,12 @@ fun WeeklyTemperature(weather: WeeklyForecast) {
                 style = MaterialTheme.typography.bodyLarge,
                 text = weather.dayInfo.asString()
             )
-            Icon(
-                painter = painterResource(id = R.drawable.ic_cloud),
-                contentDescription = null,
-                modifier = Modifier.padding(horizontal = 8.dp)
+            AsyncImage(
+                modifier = Modifier
+                    .size(32.dp)
+                    .clip(CircleShape),
+                model = weather.weatherCode.url,
+                contentDescription = weather.weatherCode.description,
             )
             Text(
                 modifier = Modifier.defaultMinSize(minWidth = 60.dp),
@@ -336,7 +379,31 @@ fun HomeScreenPreview() {
     WeatherAppTheme {
         Column(Modifier.fillMaxSize()) {
             WeatherInfo(
-                weatherInfo = WeeklyForecastData(0, 0, 0, emptyList()),
+                weatherInfo = WeeklyForecastData(
+                    currentTemp = 20,
+                    currentFeelsLike = 22,
+                    dailyHigh = 15,
+                    dailyLow = 10,
+                    weatherCode = WeatherCodeInfo(
+                        0,
+                        "Clear Sky",
+                        "https://openweathermap.org/img/wn/01d@2x.png"
+                    ),
+                    isDay = true,
+                    weeklyForecast = listOf(
+                        WeeklyForecast(
+                            date = "02-06-2024",
+                            dayInfo = UiText.StringResource(R.string.lbl_today),
+                            high = 21,
+                            low = 15,
+                            weatherCode = WeatherCodeInfo(
+                                0,
+                                "Clear Sky",
+                                "https://openweathermap.org/img/wn/01d@2x.png"
+                            )
+                        )
+                    )
+                ),
                 searchedText = "",
                 isValidSearch = false,
                 onTextChanged = {},

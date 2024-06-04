@@ -35,7 +35,10 @@ data class Daily(
     val temperature2mMin: List<Float>? = null,
 
     @field:SerializedName("time")
-    val time: List<String>? = null
+    val time: List<String>? = null,
+
+    @field:SerializedName("weather_code")
+    val weatherCode: List<Int>? = null
 )
 
 data class Current(
@@ -43,11 +46,21 @@ data class Current(
     @field:SerializedName("temperature_2m")
     val temperature2m: Float? = null,
 
+    @field:SerializedName("apparent_temperature")
+    val apparentTemperature: Float? = null,
+
     @field:SerializedName("interval")
     val interval: Int? = null,
 
     @field:SerializedName("time")
-    val time: String? = null
+    val time: String? = null,
+
+    @field:SerializedName("weather_code")
+    val weatherCode: Int? = null,
+
+    @field:SerializedName("is_day")
+    val isDay: Int? = null
+
 )
 
 data class CurrentUnits(
