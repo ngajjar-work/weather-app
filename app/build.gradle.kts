@@ -62,6 +62,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.constraintlayout.compose)
 
     //navigation
     implementation(libs.navigation.compose)
@@ -70,7 +71,6 @@ dependencies {
     //dagger
     implementation(libs.dagger.hilt)
     implementation(libs.androidx.hilt.navigation.compose)
-    testImplementation("junit:junit:4.12")
     debugImplementation(libs.androidx.ui.tooling)
     ksp(libs.dagger.hilt.compiler)
 
@@ -78,6 +78,9 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.logging.interceptor)
+
+    //image loading
+    implementation(libs.coil.compose)
 
     //testing
     androidTestImplementation(libs.androidx.junit)

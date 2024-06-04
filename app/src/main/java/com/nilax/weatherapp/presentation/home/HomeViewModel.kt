@@ -35,7 +35,7 @@ class HomeViewModel @Inject constructor(
     private fun fetchWeeklyData(latitude: Double, longitude: Double) {
         _homeScreenState.value = _homeScreenState.value.copy(isLoading = true, error = null)
 
-        useCase.invoke(
+        useCase(
             latitude,
             longitude,
             NetworkConstants.CURRENT_PARAMS,

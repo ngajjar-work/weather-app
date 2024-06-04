@@ -10,9 +10,11 @@ pattern and Clean Architecture principles.
 ## Key Features
 
 - **Weekly Weather Forecasts**: Users can view a comprehensive weather forecast for the upcoming
-  week, including daily temperatures, weather conditions.
+  week, including daily temperatures and weather conditions.
 - **Coordinate-Based Search**: Users can search for weather information based on specific geographic
   coordinates, making it easy to get accurate weather data for any location.
+- **Weather Condition Icons**: Visual icons representing different weather conditions, enhancing the
+  user experience by providing quick and intuitive weather status at a glance.
 - **Network Error Handling**: The app gracefully handles network errors by allowing users to retry
   fetching data, ensuring a reliable user experience even in less-than-ideal network conditions.
 - **Loading and Error States**: Visual indicators for loading and error states enhance user
