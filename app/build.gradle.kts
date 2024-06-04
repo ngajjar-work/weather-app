@@ -70,7 +70,6 @@ dependencies {
     //dagger
     implementation(libs.dagger.hilt)
     implementation(libs.androidx.hilt.navigation.compose)
-    testImplementation("junit:junit:4.12")
     debugImplementation(libs.androidx.ui.tooling)
     ksp(libs.dagger.hilt.compiler)
 
@@ -78,6 +77,9 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.logging.interceptor)
+
+    //image loading
+    implementation(libs.coil.compose)
 
     //testing
     androidTestImplementation(libs.androidx.junit)
