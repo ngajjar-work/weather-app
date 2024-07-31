@@ -7,6 +7,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import com.nilax.weatherapp.base.BaseTest
 import com.nilax.weatherapp.common.NetworkConstants
 import com.nilax.weatherapp.common.network.Result
+import com.nilax.weatherapp.domain.model.WeatherCodeInfo
 import com.nilax.weatherapp.domain.model.WeeklyForecastData
 import com.nilax.weatherapp.domain.model.error.DataError
 import com.nilax.weatherapp.domain.model.error.RootError
@@ -41,7 +42,10 @@ class HomeViewModelTest : BaseTest() {
         0,
         0,
         0,
-        emptyList()
+        dailyLow = 0,
+        isDay = false,
+        weatherCode = WeatherCodeInfo(0, "", ""),
+        weeklyForecast = emptyList()
     )
 
     private val expectedError = DataError.Network.UNKNOWN.asUiText()
@@ -56,7 +60,7 @@ class HomeViewModelTest : BaseTest() {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Assert
-        verify(useCase, times(1)).invoke(
+        verify(useCase, times(1))(
             expectedLatitude,
             expectedLongitude,
             expectedCurrentParameter,
@@ -126,14 +130,14 @@ class HomeViewModelTest : BaseTest() {
         testDispatcher.scheduler.advanceUntilIdle()
 
         // Assert
-        verify(useCase, times(1)).invoke(
+        verify(useCase, times(1))(
             expectedLatitude,
             expectedLongitude,
             expectedCurrentParameter,
             expectedDailyParameter
         )
 
-        verify(useCase, times(1)).invoke(
+        verify(useCase, times(1))(
             validLatLong.first,
             validLatLong.second,
             expectedCurrentParameter,
@@ -185,7 +189,7 @@ class HomeViewModelTest : BaseTest() {
         sut.onRetry()
 
         // Assert - useCase called after onRetry
-        verify(useCase, times(1)).invoke(
+        verify(useCase, times(1))(
             expectedLatitude,
             expectedLongitude,
             expectedCurrentParameter,
